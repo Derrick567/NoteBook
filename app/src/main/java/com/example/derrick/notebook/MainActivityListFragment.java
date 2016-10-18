@@ -5,7 +5,13 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.util.Log;
+import android.view.ContextMenu;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
@@ -22,24 +28,13 @@ public class MainActivityListFragment extends ListFragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-         notes = new ArrayList();
-        notes.add(new Note("Note1 aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","this is a body of our note bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb" +
-                "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", Note.Category.PERSONAL));
-        notes.add(new Note("Note2","this is a body of our note", Note.Category.TECHNICAL));
-        notes.add(new Note("Note3","this is a body of our note", Note.Category.QUOTE));
-        notes.add(new Note("Note4","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note5","this is a body of our note", Note.Category.PERSONAL));
-        notes.add(new Note("Note6","this is a body of our note", Note.Category.TECHNICAL));
-        notes.add(new Note("Note7","this is a body of our note", Note.Category.QUOTE));
-        notes.add(new Note("Note8","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note9","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note10","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note11","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note12","this is a body of our note", Note.Category.FINANCE));
-        notes.add(new Note("Note13","this is a body of our note", Note.Category.FINANCE));
+        NotebookAdapter dbAdapter =new NotebookAdapter(getActivity());
+        dbAdapter.open();
+        notes = dbAdapter.getAllNotes();
+        dbAdapter.close();
          adapter = new NoteAdapter(getActivity(),notes);
         setListAdapter(adapter);
-
+        registerForContextMenu(getListView());
         //getLIstView().setDivider();
     }
 
@@ -47,9 +42,42 @@ public class MainActivityListFragment extends ListFragment {
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        launchDetailActivity(position);
+        launchDetailActivity(MainActivity.FragmentToLaunch.VIEW,position);
     }
-    private void  launchDetailActivity(int position){
+
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, v, menuInfo);
+
+        MenuInflater menuInflater =getActivity().getMenuInflater();
+        menuInflater.inflate(R.menu.long_press_menu,menu);
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+                int position = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+        Note note  =(Note)getListAdapter().getItem(position);
+        switch (item.getItemId()){
+            case R.id.edit:
+                launchDetailActivity(MainActivity.FragmentToLaunch.EDIT,position);
+                return true;
+            case R.id.delete:
+                NotebookAdapter notebookAdapter= new NotebookAdapter(getActivity());
+                notebookAdapter.open();
+                notebookAdapter.deleteNote(note.getId());
+
+
+                notes.clear();
+                notes.addAll(notebookAdapter.getAllNotes());
+                adapter.notifyDataSetChanged();
+                notebookAdapter.close();
+                return true;
+        }
+
+        return super.onContextItemSelected(item);
+    }
+
+    private void  launchDetailActivity(MainActivity.FragmentToLaunch ftl, int  position){
         Note note =(Note) getListAdapter().getItem(position);
         Intent intent = new Intent(getActivity(),NoteDetailActivity.class);
         intent.putExtra(MainActivity.NOTE_TITLE_EXTRA,note.getTitle());
@@ -57,6 +85,14 @@ public class MainActivityListFragment extends ListFragment {
         intent.putExtra(MainActivity.NOTE_CATEGORY_EXTRA,note.getCategory());
         intent.putExtra(MainActivity.NOTE_ID_EXTRA,note.getId());
 
+        switch(ftl){
+            case VIEW:
+                intent.putExtra(MainActivity.NOTE_FRAGMENT_TO_EXTRA,MainActivity.FragmentToLaunch.VIEW);
+                break;
+            case EDIT:
+                intent.putExtra(MainActivity.NOTE_FRAGMENT_TO_EXTRA,MainActivity.FragmentToLaunch.EDIT);
+                break;
+        }
         startActivity(intent);
     }
 }
