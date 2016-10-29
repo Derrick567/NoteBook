@@ -2,9 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:paddingStart="12dp"
-    android:paddingEnd="10dp"
-    android:paddingBottom="10dp"
+
     android:background="#f9f9f9"
     >
     <ImageButton
@@ -15,7 +13,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentStart="true"
         android:layout_marginBottom="15dp"
+
         android:clickable="true"
+
         />
 
     <ScrollView
@@ -26,13 +26,17 @@
         android:layout_alignParentEnd="true"
         android:layout_toEndOf="@id/editNoteButton"
         android:layout_alignBottom="@id/editNoteButton"
+        android:background="@drawable/rounded_title"
         >
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minLines="1"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Large"
-            android:id="@+id/editNoteTitle"/>
+            android:id="@+id/editNoteTitle"
+            android:paddingLeft="10dp"
+
+            />
     </ScrollView>
 
     <ScrollView
@@ -45,6 +49,7 @@
         android:layout_marginTop="5dp"
         android:layout_marginStart="4dp"
         android:layout_above="@+id/saveNote"
+        android:background="@drawable/rounded_content"
         >
         <EditText
             android:layout_width="match_parent"
@@ -56,7 +61,9 @@
             android:textColor="#000000"
             android:background="@null"
             android:inputType="textMultiLine"
-            android:gravity="top"/>
+            android:gravity="top"
+            android:paddingLeft="10dp"
+            />
     </ScrollView>
 
 

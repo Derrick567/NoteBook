@@ -13,6 +13,9 @@
     <!--Main List Long Click Context Menu-->
     <string name="edit_menu">Edit</string>
     <string name="delete_menu">Delete</string>
+
     <!-- Fragment Widget String-->
     <string name="save_note_button">Save</string>
+    <string name="title_hint">在此輸入標題</string>
+    <string name="content_hint">在此輸入內容</string>
 </resources>

@@ -62,7 +62,10 @@ public class NoteEditFragment extends Fragment {
         title.setText(intent.getExtras().getString(MainActivity.NOTE_TITLE_EXTRA,""));
         message.setText(intent.getExtras().getString(MainActivity.NOTE_MESSAGE_EXTRA,""));
         id=intent.getExtras().getLong(MainActivity.NOTE_ID_EXTRA,0);
-
+        if(newNote){
+            title.setHint(getString(R.string.title_hint));
+            message.setHint(getString(R.string.content_hint));
+        }
 
         if(savedButtonCategory!=null){
             noteCatButton.setImageResource(Note.categoryToDrawable(savedButtonCategory));
